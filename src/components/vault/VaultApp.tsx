@@ -73,8 +73,7 @@ export const VaultApp: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-text-primary flex flex-col selection:bg-brand-primary/20 selection:text-brand-primary relative overflow-x-hidden">
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-15"
-        style={{ backgroundImage: "url('/images/mainbg.png')" }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-20 bg-[url('/images/mainbgMobile.png')] md:bg-[url('/images/mainbg.png')]"
       />
 
       <AnimatePresence mode="wait">
