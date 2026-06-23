@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Secret } from '@/types/vault';
 import { motion } from 'framer-motion';
-import { Plus, ShieldAlert } from 'lucide-react';
+import { Plus, ShieldAlert, Sparkles } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { Pagination } from '../ui/Pagination';
 import { SearchBar } from './SearchBar';
 import { EmptyVault } from './EmptyVault';
+import { NoResults } from './NoResults';
 import { SecretList } from './SecretList';
 import { SecretForm } from './SecretForm';
 import { SecretDetails } from './SecretDetails';
@@ -16,6 +18,7 @@ interface UnlockedVaultProps {
   onUpdateSecret: (secret: Secret) => Promise<any>;
   onDeleteSecret: (id: string) => Promise<any>;
   onLock: () => void;
+  onGenerateMockSecrets: () => Promise<void>;
 }
 
 export const UnlockedVault: React.FC<UnlockedVaultProps> = ({
@@ -23,12 +26,34 @@ export const UnlockedVault: React.FC<UnlockedVaultProps> = ({
   onCreateSecret,
   onUpdateSecret,
   onDeleteSecret,
-  onLock
+  onLock,
+  onGenerateMockSecrets
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedSecret, setSelectedSecret] = useState<Secret | null>(null);
   const [editingSecret, setEditingSecret] = useState<Secret | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 9;
+  const listTopRef = React.useRef<HTMLDivElement>(null);
+
+  const handleGenerateMock = async () => {
+    setIsGenerating(true);
+    try {
+      await onGenerateMockSecrets();
+    } catch (error) {
+      // Toast handles error message
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Reset page to 1 when search query changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const [confirmState, setConfirmState] = useState<{
     isOpen: boolean;
@@ -41,7 +66,7 @@ export const UnlockedVault: React.FC<UnlockedVaultProps> = ({
     title: '',
     message: '',
     type: 'danger',
-    onConfirm: () => {}
+    onConfirm: () => { }
   });
 
   const handleDeleteRequest = (id: string) => {
@@ -87,6 +112,29 @@ export const UnlockedVault: React.FC<UnlockedVaultProps> = ({
     );
   });
 
+  const totalPages = Math.ceil(filteredSecrets.length / ITEMS_PER_PAGE);
+  const activePage = Math.min(currentPage, Math.max(1, totalPages));
+
+  // Sync state if it goes out of bounds (e.g. after deletion)
+  React.useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedSecrets = filteredSecrets.slice(
+    (activePage - 1) * ITEMS_PER_PAGE,
+    activePage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    if (listTopRef.current) {
+      listTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+
   return (
     <motion.div
       key="unlocked"
@@ -106,41 +154,65 @@ export const UnlockedVault: React.FC<UnlockedVaultProps> = ({
           </p>
         </div>
 
-        <Button
-          onClick={() => {
-            setEditingSecret(null);
-            setIsFormOpen(true);
-          }}
-          className="self-start sm:self-center"
-        >
-          <Plus size={16} className="mr-1.5" />
-          Add Secret
-        </Button>
+        <div className="flex flex-wrap items-center gap-3 self-start sm:self-center">
+          {secrets.length > 0 && (
+            <Button
+              variant="secondary"
+              onClick={handleGenerateMock}
+              isLoading={isGenerating}
+              disabled={isGenerating}
+            >
+              {!isGenerating && <Sparkles size={16} className="mr-1.5 text-brand-secondary" />}
+              Generate Mock Credentials
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setEditingSecret(null);
+              setIsFormOpen(true);
+            }}
+            disabled={isGenerating}
+            className="self-start sm:self-center"
+          >
+            <Plus size={16} className="mr-1.5" />
+            Add Secret
+          </Button>
+        </div>
       </div>
 
       {secrets.length > 0 && (
-        <div className="w-full max-w-xl">
+        <div ref={listTopRef} className="w-full max-w-xl scroll-mt-6">
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </div>
       )}
 
       {secrets.length === 0 ? (
-        <EmptyVault onAddSecret={() => setIsFormOpen(true)} />
-      ) : filteredSecrets.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-surface/10 py-12 px-4 text-center">
-          <ShieldAlert size={28} className="text-text-muted mb-3" />
-          <h4 className="text-sm font-semibold text-text-primary">No search results</h4>
-          <p className="text-sm text-text-secondary mt-1 max-w-sm">
-            No records match "{searchQuery}". Try updating your query or checking spellings.
-          </p>
-        </div>
-      ) : (
-        <SecretList
-          secrets={filteredSecrets}
-          onViewDetails={setSelectedSecret}
-          onDelete={handleDeleteRequest}
-          onEdit={handleStartEdit}
+        <EmptyVault
+          onAddSecret={() => setIsFormOpen(true)}
+          onGenerateMock={onGenerateMockSecrets}
         />
+      ) : filteredSecrets.length === 0 ? (
+        <NoResults
+          searchQuery={searchQuery}
+          onClearSearch={() => setSearchQuery('')}
+        />
+      ) : (
+        <div className="space-y-8">
+          <SecretList
+            secrets={paginatedSecrets}
+            onViewDetails={setSelectedSecret}
+            onDelete={handleDeleteRequest}
+            onEdit={handleStartEdit}
+          />
+
+          <Pagination
+            currentPage={activePage}
+            totalPages={totalPages}
+            totalItems={filteredSecrets.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={handlePageChange}
+          />
+        </div>
       )}
 
       <SecretForm

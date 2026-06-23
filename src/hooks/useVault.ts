@@ -169,6 +169,100 @@ export function useVault() {
     toast.success(`"${deletedSecretName}" deleted successfully!`);
   }, [isLocked, secrets, vaultKey]);
 
+  const generateMockSecrets = useCallback(async (): Promise<void> => {
+    if (isLocked || !vaultKey) {
+      throw new Error('Vault is locked. Decrypt first.');
+    }
+
+    const mockSecretsData = [
+      {
+        name: 'Google Account',
+        username: 'john.doe@gmail.com',
+        password: 'g00gLe_P@ssw0rd_!23',
+        notes: 'Personal Gmail account with 2FA enabled.'
+      },
+      {
+        name: 'Netflix',
+        username: 'netflix_family',
+        password: 'N3tfl1x_Ch1ll_2026',
+        notes: 'Shared family subscription plan.'
+      },
+      {
+        name: 'GitHub',
+        username: 'johndoe-dev',
+        password: 'ghp_SecureToken998877',
+        notes: 'Developer personal token and SSH key password.'
+      },
+      {
+        name: 'Spotify Premium',
+        username: 'sound_lover',
+        password: 'Sp0t1fy_Mel0dy_99!',
+        notes: 'Premium duo plan. Next billing on July 10th.'
+      },
+      {
+        name: 'Amazon Prime',
+        username: 'shopaholic_john',
+        password: 'Amz_Pr1me_Del1very_#1',
+        notes: 'Linked with credit card ending in 4321.'
+      },
+      {
+        name: 'Slack',
+        username: 'john.d@company.com',
+        password: 'Sl@ck_WorkSpace_2026!',
+        notes: 'Company workspace access. Remember to use SSO.'
+      },
+      {
+        name: 'Zoom',
+        username: 'john.doe.meetings',
+        password: 'Zm_Vide0_Conferenc3',
+        notes: 'Used for daily team standups and interviews.'
+      },
+      {
+        name: 'Twitter/X',
+        username: '@doe_dev',
+        password: 'X_Tw1tter_Secured_88',
+        notes: 'Social media handle for tech discussions.'
+      },
+      {
+        name: 'Microsoft Office 365',
+        username: 'j.doe@outlook.com',
+        password: 'M1cr0s0ft_365_Pro',
+        notes: 'Academic and professional Office subscription.'
+      },
+      {
+        name: 'Adobe Creative Cloud',
+        username: 'design_by_john@adobe.com',
+        password: 'Ad0be_Creative_Su1te_!',
+        notes: 'Subscription for Photoshop and Premiere Pro.'
+      }
+    ];
+
+    const newSecrets: Secret[] = mockSecretsData.map((data) => ({
+      ...data,
+      id: typeof window !== 'undefined' && window.crypto?.randomUUID
+        ? window.crypto.randomUUID()
+        : Math.random().toString(36).substring(2, 9),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }));
+
+    const updatedSecrets = [...secrets, ...newSecrets];
+    const payload = getEncryptedVault();
+    if (!payload) {
+      throw new Error('No vault container initialized in storage.');
+    }
+
+    const encryptionParams = await encryptVault(updatedSecrets, vaultKey);
+    const updatedPayload: EncryptedVaultPayload = {
+      ...payload,
+      encryption: encryptionParams
+    };
+
+    saveEncryptedVault(updatedPayload);
+    setSecrets(updatedSecrets);
+    toast.success('Generated 10 mock credentials successfully!');
+  }, [isLocked, secrets, vaultKey]);
+
   const resetVault = useCallback(() => {
     clearEncryptedVault();
     setSecrets([]);
@@ -188,6 +282,7 @@ export function useVault() {
     createSecret,
     updateSecret,
     deleteSecret,
-    resetVault
+    resetVault,
+    generateMockSecrets
   };
 }

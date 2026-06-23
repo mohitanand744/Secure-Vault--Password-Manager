@@ -20,7 +20,8 @@ export const VaultApp: React.FC = () => {
     createSecret,
     updateSecret,
     deleteSecret,
-    resetVault
+    resetVault,
+    generateMockSecrets
   } = useVault();
 
   const [isDecrypting, setIsDecrypting] = useState(false);
@@ -121,6 +122,7 @@ export const VaultApp: React.FC = () => {
               onUpdateSecret={updateSecret}
               onDeleteSecret={deleteSecret}
               onLock={lockVault}
+              onGenerateMockSecrets={generateMockSecrets}
             />
           )}
         </AnimatePresence>

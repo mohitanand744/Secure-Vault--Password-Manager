@@ -23,9 +23,9 @@ export const SecretList: React.FC<SecretListProps> = ({
           <motion.div
             key={secret.id}
             layout
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            initial={{ scale: 0.5, y: 12 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.25, y: -10 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
             <SecretCard
