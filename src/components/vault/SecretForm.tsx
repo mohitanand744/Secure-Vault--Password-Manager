@@ -145,6 +145,7 @@ export const SecretForm: React.FC<SecretFormProps> = ({
             placeholder="Enter secret password"
             error={errors.password?.message}
             disabled={isSubmitting}
+            autoComplete="new-password"
             {...register('password', { required: 'Password is required' })}
             rightElement={
               <div className="flex items-center gap-1">

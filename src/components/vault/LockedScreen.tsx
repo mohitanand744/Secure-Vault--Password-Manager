@@ -163,6 +163,7 @@ export const LockedScreen: React.FC<LockedScreenProps> = ({
               onChange={(e) => setPassword(e.target.value)}
               error={error}
               disabled={isLoading}
+              autoComplete={vaultExists ? "current-password" : "new-password"}
               rightElement={
                 <button
                   type="button"
@@ -183,6 +184,7 @@ export const LockedScreen: React.FC<LockedScreenProps> = ({
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
+                autoComplete="new-password"
                 rightElement={
                   <button
                     type="button"
@@ -285,6 +287,7 @@ export const LockedScreen: React.FC<LockedScreenProps> = ({
               onChange={(e) => setNewPassword(e.target.value)}
               error={forgotError}
               disabled={isLoading}
+              autoComplete="new-password"
               rightElement={
                 <button
                   type="button"
@@ -305,6 +308,7 @@ export const LockedScreen: React.FC<LockedScreenProps> = ({
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
               disabled={isLoading}
+              autoComplete="new-password"
               rightElement={
                 <button
                   type="button"
