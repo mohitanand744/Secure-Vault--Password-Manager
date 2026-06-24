@@ -17,7 +17,6 @@ interface UnlockedVaultProps {
   onCreateSecret: (data: { name: string; username: string; password: string; notes?: string }) => Promise<any>;
   onUpdateSecret: (secret: Secret) => Promise<any>;
   onDeleteSecret: (id: string) => Promise<any>;
-  onLock: () => void;
   onGenerateMockSecrets: () => Promise<void>;
 }
 
@@ -26,7 +25,6 @@ export const UnlockedVault: React.FC<UnlockedVaultProps> = ({
   onCreateSecret,
   onUpdateSecret,
   onDeleteSecret,
-  onLock,
   onGenerateMockSecrets
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,15 +42,16 @@ export const UnlockedVault: React.FC<UnlockedVaultProps> = ({
     try {
       await onGenerateMockSecrets();
     } catch (error) {
-      // Toast handles error message
+      console.log('error while generating mock secrets', error);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // Reset page to 1 when search query changes
   React.useEffect(() => {
-    setCurrentPage(1);
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
   }, [searchQuery]);
 
   const [confirmState, setConfirmState] = useState<{

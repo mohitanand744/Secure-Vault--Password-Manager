@@ -111,7 +111,6 @@ export const VaultApp: React.FC = () => {
                 vaultExists={vaultExists}
                 onUnlock={handleUnlock}
                 onCreateVault={handleCreateVault}
-                onReset={handleResetRequest}
               />
             </motion.div>
           ) : (
@@ -120,7 +119,6 @@ export const VaultApp: React.FC = () => {
               onCreateSecret={createSecret}
               onUpdateSecret={updateSecret}
               onDeleteSecret={deleteSecret}
-              onLock={lockVault}
               onGenerateMockSecrets={generateMockSecrets}
             />
           )}

@@ -11,7 +11,6 @@ interface LockedScreenProps {
   vaultExists: boolean;
   onUnlock: (password: string) => Promise<boolean>;
   onCreateVault: (password: string) => Promise<boolean>;
-  onReset: () => void;
 }
 
 const containerVariants = {
@@ -38,20 +37,20 @@ const itemVariants = {
 export const LockedScreen: React.FC<LockedScreenProps> = ({
   vaultExists,
   onUnlock,
-  onCreateVault,
-  onReset
+  onCreateVault
 }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
   const [isForgotOpen, setIsForgotOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [forgotError, setForgotError] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [showMasterPassword, setShowMasterPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,14 +79,14 @@ export const LockedScreen: React.FC<LockedScreenProps> = ({
       setIsLoading(false);
     }
   };
-  const [showMasterPassword, setShowMasterPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     const pwError = validateMasterPassword(password);
+
     if (pwError) {
       setError(pwError);
       return;

@@ -45,7 +45,8 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
             initial={{ opacity: 0, scale: 0.5, y: -270 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 170 }}
-            transition={{ duration: 0.15, ease: 'easeInOut' }}
+            layout
+            transition={{ type: 'spring', stiffness: 300, damping: 22 }}
             className={cn(
               'relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-surface shadow-card flex flex-col max-h-[90vh]',
               className
@@ -67,6 +68,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
             </div>
 
             <motion.div
+              layout
               className="overflow-y-auto px-6 py-5 flex-1">
               {children}
             </motion.div>

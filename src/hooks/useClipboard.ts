@@ -26,6 +26,7 @@ export function useClipboard({ timeout = 10000 }: UseClipboardOptions = {}) {
         try {
           await navigator.clipboard.writeText('');
         } catch (e) {
+          console.log('error while clearing clipboard', e);
         }
         setCopied(false);
       }, timeout);
