@@ -10,7 +10,7 @@ interface SecretListProps {
   onEdit: (secret: Secret) => void;
 }
 
-export const SecretList: React.FC<SecretListProps> = ({
+const SecretList: React.FC<SecretListProps> = ({
   secrets,
   onViewDetails,
   onDelete,

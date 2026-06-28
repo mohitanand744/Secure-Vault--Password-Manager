@@ -7,7 +7,7 @@ import { Pagination } from '../ui/Pagination';
 import { SearchBar } from './SearchBar';
 import { EmptyVault } from './EmptyVault';
 import { NoResults } from './NoResults';
-import { SecretList } from './SecretList';
+import SecretList from './SecretList';
 import { SecretForm } from './SecretForm';
 import { SecretDetails } from './SecretDetails';
 import { ConfirmModal } from '../ui/ConfirmModal';

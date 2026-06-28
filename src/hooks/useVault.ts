@@ -30,7 +30,7 @@ export function useVault() {
     setSecrets([]);
     setVaultKey(null);
     setIsLocked(true);
-    toast.info('Vault locked.');
+    toast.info('Your Vault has been locked.');
   }, []);
 
   const masterPasswordUnlockFlow = useCallback(async (password: string): Promise<boolean> => {
@@ -40,12 +40,12 @@ export function useVault() {
     }
 
     const saltBuffer = base64ToArrayBuffer(payload.kdf.salt);
-    
+
     const key = await deriveVaultKey(password, new Uint8Array(saltBuffer));
 
     try {
       const decryptedSecrets = await decryptVault(payload, key);
-      
+
       setSecrets(decryptedSecrets);
       setVaultKey(key);
       setIsLocked(false);
@@ -58,9 +58,9 @@ export function useVault() {
 
   const createNewVault = useCallback(async (password: string): Promise<boolean> => {
     const saltBytes = generateSalt();
-    
+
     const key = await deriveVaultKey(password, saltBytes);
-    
+
     const initialSecrets: Secret[] = [];
     const encryptionParams = await encryptVault(initialSecrets, key);
 
@@ -76,7 +76,7 @@ export function useVault() {
     };
 
     saveEncryptedVault(payload);
-    
+
     setSecrets(initialSecrets);
     setVaultKey(key);
     setIsLocked(false);

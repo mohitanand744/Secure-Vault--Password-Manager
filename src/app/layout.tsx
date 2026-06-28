@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from 'sonner';
+import { MobileNotSupported } from '@/components/ui/MobileNotSupported';
 
 export default function RootLayout({
   children,
@@ -31,7 +32,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <div className="max-[350px]:hidden flex flex-col min-h-full flex-1">
+          {children}
+        </div>
+        <MobileNotSupported />
         <Toaster position="top-right" richColors theme="dark" closeButton />
       </body>
     </html>
